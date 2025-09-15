@@ -113,30 +113,56 @@
         // Replace assignment group
         if (assignmentGroup.includes("L1_RAN_LTE_NPO")) assignmentGroup = "RF";
         else if (assignmentGroup.includes("L1_EMSOSS")) assignmentGroup = "EMSOSS";
+        else if (assignmentGroup.includes("L1_RAN_WIFI")) assignmentGroup = "RF (WIFI)";
 
+
+        // Remove SA, PE, NSA from description
+        description = description.replace(/\b(SA|PE|NSA)\b/g, "").replace(/\s+/g, " ").trim();
+
+        // Rearrange 'Nokia 5G' to '5G Nokia'
+        description = description.replace(/\bNokia 5G\b/g, "5G Nokia");
+
+       let timeStr = "";
+	const [startDate, startTimePart] = startTime.split(" ");
+	const [endDate, endTimePart] = endTime.split(" ");
+
+	const isEarlyMorning = (
+  	startTimePart >= "00:00" && startTimePart <= "06:00" &&
+  	endTimePart >= "00:00" && endTimePart <= "06:00"
+	);
+
+	if (!isEarlyMorning) {
+	  if (startDate === endDate) {
+	    timeStr = `PE timing :${startDate} ${startTimePart} Hrs to ${endTimePart} Hrs`;
+	  } else {
+	    timeStr = `PE timing :${startDate} ${startTimePart} Hrs to ${endDate} ${endTimePart} Hrs`;
+	  }
+	}
+
+	
         // Move (NPO approval awaited) to end
         let npoNote = "";
         if (description.includes("(NPO approval awaited)")) {
           npoNote = " (NPO approval awaited)";
           description = description.replace("(NPO approval awaited)", "").trim();
-        }
+        }	
 
-        // Remove SA, PE, NSA from description
-        description = description.replace(/\b(SA|PE|NSA)\b/g, "").replace(/\s+/g, " ").trim();
+ 
+	let bullet = "";
 
-        // Format date-time
-        let timeStr = "";
-        const [startDate, startTimePart] = startTime.split(" ");
-        const [endDate, endTimePart] = endTime.split(" ");
-        if (!(startTimePart >= "00:00" && startTimePart <= "00:06" && endTimePart >= "00:00" && endTimePart <= "00:06")) {
-          if (startDate === endDate) {
-            timeStr = `${startDate} ${startTimePart} Hrs to ${endTimePart} Hrs`;
-          } else {
-            timeStr = `${startDate} ${startTimePart} Hrs to ${endDate} ${endTimePart} Hrs`;
-          }
-        }
+	if(impact==="SA"){
+	  bullet = `${circle} ${assignmentGroup} (${technology}) ${impact} PE: ${description}, ${riskImpact}${timeStr ? ", " + timeStr : ""}${npoNote}`;
+	}
+	if(assignmentGroup==="EMSOSS"){
+	  bullet = `${circle} ${assignmentGroup} (${technology}) ${impact} PE: ${description}, ${riskImpact}${timeStr ? ", " + timeStr : ""}${npoNote}`;
+	}
+	if(assignmentGroup==="WIFI"){
+	  bullet = `${circle} ${assignmentGroup} ${impact} PE: ${description}, ${riskImpact}${timeStr ? ", " + timeStr : ""}${npoNote}`;
+	}
+	else{
+	bullet = `${circle} ${assignmentGroup} (${technology}) ${impact} PE: ${description} ${timeStr ? ", " + timeStr : ""}${npoNote}`;
+	}
 
-        const bullet = `${circle} ${assignmentGroup} (${technology}) ${impact} PE: ${description}, ${riskImpact}${npoNote}${timeStr ? ", " + timeStr : ""}`;
 
         if (impact === "SA") {
           saList.push(bullet);
@@ -149,25 +175,27 @@
 
       let output = "";
       let count = 1;
+	
+
 
       if (saList.length > 0) {
         output += "RAN Domain PEs (SA): -\n\n";
         saList.forEach(item => {
-          output += count++ + ". " + item + "\n\n";
+          output += count++ + ". " + item + "\n";
         });
       }
 
       if (nsaList.length > 0) {
-        output += "RAN Domain PEs (NSA): -\n\n";
+        output += "\nRAN Domain PEs (NSA): -\n\n";
         nsaList.forEach(item => {
-          output += count++ + ". " + item + "\n\n";
+          output += count++ + ". " + item + "\n";
         });
       }
 
       if (emsList.length > 0) {
-        output += "EMS OSS PEs (NSA): -\n\n";
+        output += "\nEMS OSS PEs (NSA): -\n\n";
         emsList.forEach(item => {
-          output += count++ + ". " + item + "\n\n";
+          output += count++ + ". " + item + "\n";
         });
       }
 
