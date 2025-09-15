@@ -121,23 +121,25 @@
 
         // Rearrange 'Nokia 5G' to '5G Nokia'
         description = description.replace(/\bNokia 5G\b/g, "5G Nokia");
-
+		// time condition in 00:00 to 06:00 it will not mention 
+		// if date is same mention date one time only
+		// if date is different mention both dates and time
        let timeStr = "";
-	const [startDate, startTimePart] = startTime.split(" ");
-	const [endDate, endTimePart] = endTime.split(" ");
+		const [startDate, startTimePart] = startTime.split(" ");
+		const [endDate, endTimePart] = endTime.split(" ");
+	
+		const isEarlyMorning = (
+	  	startTimePart >= "00:00" && startTimePart <= "06:00" &&
+	  	endTimePart >= "00:00" && endTimePart <= "06:00"
+		);
 
-	const isEarlyMorning = (
-  	startTimePart >= "00:00" && startTimePart <= "06:00" &&
-  	endTimePart >= "00:00" && endTimePart <= "06:00"
-	);
-
-	if (!isEarlyMorning) {
-	  if (startDate === endDate) {
-	    timeStr = `PE timing :${startDate} ${startTimePart} Hrs to ${endTimePart} Hrs`;
-	  } else {
-	    timeStr = `PE timing :${startDate} ${startTimePart} Hrs to ${endDate} ${endTimePart} Hrs`;
-	  }
-	}
+		if (!isEarlyMorning) {
+		  if (startDate === endDate) {
+		    timeStr = `PE timing :${startDate} ${startTimePart} Hrs to ${endTimePart} Hrs`;
+		  } else {
+		    timeStr = `PE timing :${startDate} ${startTimePart} Hrs to ${endDate} ${endTimePart} Hrs`;
+		  }
+		}
 
 	
         // Move (NPO approval awaited) to end
@@ -159,6 +161,7 @@
 	if(assignmentGroup==="WIFI"){
 	  bullet = `${circle} ${assignmentGroup} ${impact} PE: ${description}, ${riskImpact}${timeStr ? ", " + timeStr : ""}${npoNote}`;
 	}
+		// removed risk and impact from NSA CRs
 	else{
 	bullet = `${circle} ${assignmentGroup} (${technology}) ${impact} PE: ${description} ${timeStr ? ", " + timeStr : ""}${npoNote}`;
 	}
