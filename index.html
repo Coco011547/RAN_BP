@@ -4,7 +4,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<title>RAN Bullet Point Generator</title>
+<title>Excel Bullet Point Generator</title>
 <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -73,7 +73,7 @@
 </head>
 <body>
 <div class="container">
-<h2 style="font-weight: bold; font-size: 14pt; font-family: 'Calibri';color: #222222;">📋 RAN Bullet Point Generator</h2>
+<h2 style="font-weight: bold; font-size: 14pt; font-family: 'Calibri';color: #222222;">📋 Excel Bullet Point Generator</h2>
 <label for="excelInput">Paste Excel Data (with headers):</label>
 <textarea id="excelInput" placeholder="Paste your Excel data here..." rows="5"></textarea>
 <div class="button-group">
@@ -121,25 +121,23 @@
 
         // Rearrange 'Nokia 5G' to '5G Nokia'
         description = description.replace(/\bNokia 5G\b/g, "5G Nokia");
-		// time condition in 00:00 to 06:00 it will not mention 
-		// if date is same mention date one time only
-		// if date is different mention both dates and time
-       let timeStr = "";
-		const [startDate, startTimePart] = startTime.split(" ");
-		const [endDate, endTimePart] = endTime.split(" ");
-	
-		const isEarlyMorning = (
-	  	startTimePart >= "00:00" && startTimePart <= "06:00" &&
-	  	endTimePart >= "00:00" && endTimePart <= "06:00"
-		);
 
-		if (!isEarlyMorning) {
-		  if (startDate === endDate) {
-		    timeStr = `PE timing :${startDate} ${startTimePart} Hrs to ${endTimePart} Hrs`;
-		  } else {
-		    timeStr = `PE timing :${startDate} ${startTimePart} Hrs to ${endDate} ${endTimePart} Hrs`;
-		  }
-		}
+       let timeStr = "";
+	const [startDate, startTimePart] = startTime.split(" ");
+	const [endDate, endTimePart] = endTime.split(" ");
+
+	const isEarlyMorning = (
+  	startTimePart >= "00:00" && startTimePart <= "06:00" &&
+  	endTimePart >= "00:00" && endTimePart <= "06:00"
+	);
+
+	if (!isEarlyMorning) {
+	  if (startDate === endDate) {
+	    timeStr = `PE timing :${startDate} ${startTimePart} Hrs to ${endTimePart} Hrs`;
+	  } else {
+	    timeStr = `PE timing :${startDate} ${startTimePart} Hrs to ${endDate} ${endTimePart} Hrs`;
+	  }
+	}
 
 	
         // Move (NPO approval awaited) to end
@@ -151,20 +149,24 @@
 
  
 	let bullet = "";
+	if(impact==="NSA"){
 
-	if(impact==="SA"){
-	  bullet = `${circle} ${assignmentGroup} (${technology}) ${impact} PE: ${description}, ${riskImpact}${timeStr ? ", " + timeStr : ""}${npoNote}`;
+		if(assignmentGroup==="EMSOSS" || assignmentGroup==="WIFI" ){
+	  bullet = `${circle} ${assignmentGroup} ${impact} PE: ${description}${timeStr ? ", " + timeStr : ""}${npoNote}`;
 	}
-	if(assignmentGroup==="EMSOSS"){
-	  bullet = `${circle} ${assignmentGroup} (${technology}) ${impact} PE: ${description}, ${riskImpact}${timeStr ? ", " + timeStr : ""}${npoNote}`;
+		
+		else {
+		bullet = `${circle} ${assignmentGroup} (${technology}) ${impact} PE: ${description} ${timeStr ? ", " + timeStr : ""}${npoNote}`;
+		}
+	 
 	}
-	if(assignmentGroup==="WIFI"){
-	  bullet = `${circle} ${assignmentGroup} ${impact} PE: ${description}, ${riskImpact}${timeStr ? ", " + timeStr : ""}${npoNote}`;
-	}
+	
 		// removed risk and impact from NSA CRs
-	else{
-	bullet = `${circle} ${assignmentGroup} (${technology}) ${impact} PE: ${description} ${timeStr ? ", " + timeStr : ""}${npoNote}`;
+	else if (impact.length===2){
+	bullet = `${circle} ${assignmentGroup} (${technology}) ${impact} PE: ${description}, ${riskImpact} ${timeStr ? ", " + timeStr : ""}${npoNote}`;
 	}
+
+
 
 
         if (impact === "SA") {
