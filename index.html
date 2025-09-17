@@ -111,7 +111,7 @@
         const endTime = cols[11] || "";
 
         // Replace assignment group
-        if (assignmentGroup.includes("L1_RAN_LTE_NPO")) assignmentGroup = "RF";
+        if (assignmentGroup.includes("L1_RAN_LTE_NPO" || "L1_RAN_LTE" )) assignmentGroup = "RF";
         else if (assignmentGroup.includes("L1_EMSOSS")) assignmentGroup = "EMSOSS";
         else if (assignmentGroup.includes("L1_RAN_WIFI")) assignmentGroup = "RF (WIFI)";
 
